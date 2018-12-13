@@ -13,9 +13,8 @@ public class GuavaBloomTest {
 
     public static void main(String[] args){
 
-        long star = System.currentTimeMillis();
-        BloomFilter<Integer> filter = BloomFilter.create(Funnels.integerFunnel(),
-                10000000 , 0.01);
+        long start = System.currentTimeMillis();
+        BloomFilter<Integer> filter = BloomFilter.create(Funnels.integerFunnel(), 10000000, 0.01);
 
         for(int i = 0; i < 10000000; i++) {
             filter.put(i);
@@ -25,6 +24,6 @@ public class GuavaBloomTest {
         Assert.assertTrue(filter.mightContain(3));
         Assert.assertFalse(filter.mightContain(10000000));
         long end = System.currentTimeMillis();
-        System .out.println("执行时间：" + (end - star));
+        System .out.println("执行时间：" + (end - start));
     }
 }

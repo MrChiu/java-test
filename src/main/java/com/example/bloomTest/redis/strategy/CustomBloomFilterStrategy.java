@@ -1,39 +1,37 @@
-package com.example.bloomTest.redis;
+package com.example.bloomTest.redis.strategy;
 
+import com.example.bloomTest.redis.RedisBitmaps;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Longs;
 
 /**
  * @author: qiudong
- * @description:
+ * @description: 自定义布隆过滤器对象映射索引位的策略
  * @date: Created in 15:01 2018-12-12
  */
 public class CustomBloomFilterStrategy implements Strategy {
 
     @Override
-    public <T> boolean put(
-            T object, Funnel<? super T> funnel, int numHashFunctions, RedisBitmaps bits) {
+    public <T> boolean put(T object, Funnel<? super T> funnel, int numHashFunctions, RedisBitmaps bits) {
         long bitSize = bits.bitSize();
         byte[] bytes = Hashing.murmur3_128().hashObject(object, funnel).asBytes();
         long hash1 = lowerEight(bytes);
         long hash2 = upperEight(bytes);
 
-        boolean bitsChanged = false;
         long combinedHash = hash1;
         long[] offsets = new long[numHashFunctions];
         for (int i = 0; i < numHashFunctions; i++) {
             offsets[i] = (combinedHash & Long.MAX_VALUE) % bitSize;
             combinedHash += hash2;
         }
-        bitsChanged = bits.set(offsets);
+        boolean bitsChanged = bits.set(offsets);
         bits.ensureCapacityInternal();//自动扩容
         return bitsChanged;
     }
 
     @Override
-    public <T> boolean mightContain(
-            T object, Funnel<? super T> funnel, int numHashFunctions, RedisBitmaps bits) {
+    public <T> boolean mightContain(T object, Funnel<? super T> funnel, int numHashFunctions, RedisBitmaps bits) {
         long bitSize = bits.bitSize();
         byte[] bytes = Hashing.murmur3_128().hashObject(object, funnel).asBytes();
         long hash1 = lowerEight(bytes);

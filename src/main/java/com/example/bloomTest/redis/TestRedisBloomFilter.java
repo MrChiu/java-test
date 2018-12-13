@@ -17,29 +17,29 @@ import static java.util.stream.Collectors.toList;
  */
 public class TestRedisBloomFilter {
 
-    private static final int TOTAL = 10000;
+    private static final int TOTAL = 100000000;
     private static final double FPP = 0.0005;
 
-    @Test
-    public void test() {
-        RedisBloomFilter redisBloomFilter = RedisBloomFilter.create(TOTAL, FPP);
+    public static void main(String[] args) {
+        RedisBloomFilter<String> redisBloomFilter = RedisBloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), TOTAL, FPP);
 
-        redisBloomFilter.resetBitmap();
+//        redisBloomFilter.resetBitmap();
 
-        BloomFilter<String> bloomFilter = BloomFilter.create(Funnels.stringFunnel(Charsets.UTF_8), TOTAL, FPP);
 
-        IntStream.range(0, /* 3* */TOTAL).boxed()
-                .map(i -> Hashing.md5().hashInt(i).toString())
-                .collect(toList()).forEach(s -> {
+        IntStream.range(0, TOTAL).parallel().forEach(i -> {
+            String s = Hashing.md5().hashInt(i).toString();
             redisBloomFilter.put(s);
-            bloomFilter.put(s);
         });
 
-        String str1 = Hashing.md5().hashInt(99999).toString();
+
+        long start = System.currentTimeMillis();
+//        String str1 = Hashing.md5().hashInt(99999).toString();
         String str2 = Hashing.md5().hashInt(9999).toString();
-        String str3 = "abcdefghijklmnopqrstuvwxyz123456";
-        System.out.println(redisBloomFilter.mightContain(str1) + ":" + bloomFilter.mightContain(str1));
-        System.out.println(redisBloomFilter.mightContain(str2) + ":" + bloomFilter.mightContain(str2));
-        System.out.println(redisBloomFilter.mightContain(str3) + ":" + bloomFilter.mightContain(str3));
+//        String str3 = "abcdefghijklmnopqrstuvwxyz123456";
+//        System.out.println(redisBloomFilter.mightContain(str1));
+        System.out.println(redisBloomFilter.mightContain(str2));
+//        System.out.println(redisBloomFilter.mightContain(str3));
+        long end = System.currentTimeMillis();
+        System .out.println("执行时间：" + (end - start));
     }
 }
