@@ -8,7 +8,7 @@ import java.util.concurrent.CountDownLatch;
  * @description:
  * @date: Created in 13:45 2018-06-26
  */
-public class CountdowmTest {
+public class CountDownLatchTest {
 
     private static ConcurrentHashMap concurrentHashMap = new ConcurrentHashMap();
 
