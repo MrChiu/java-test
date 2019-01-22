@@ -94,9 +94,6 @@ public class BloomFilters {
         return Math.abs(hash);
     }
 
-
-
-
     /**
      *  hash 算法3
      * @param key
