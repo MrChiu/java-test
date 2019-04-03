@@ -19,7 +19,6 @@ public class Task {
 
     private final Condition subCondition = lock.newCondition();
 
-
     private static int num = 0;
     private List<String> lists = new LinkedList<>();
 
